@@ -3,8 +3,6 @@
 
 ![Harness Lens](assets/harness-lens-banner.png)
 
-<img src="assets/harness-lens-icon.png" alt="Harness Lens logo" width="64" height="64" align="right">
-
 # Harness Lens Homebrew Tap
 
 Official Homebrew tap for Harness Lens native CLI releases.
