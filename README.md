@@ -15,9 +15,11 @@ development live in the [CLI repository](https://github.com/harness-lens/cli).
 After the first public release publishes the formula:
 
 ```bash
-brew tap harness-lens/tap
 brew install harness-lens/tap/harness-lens
 ```
+
+This command adds the public tap and installs the formula. Every formula change
+is checked on native Apple Silicon and Intel macOS runners before release.
 
 ## Release automation
 

@@ -1,0 +1,76 @@
+# SPDX-License-Identifier: MPL-2.0
+# Copyright © 2026 Cristian Camargo Filho
+
+name: Homebrew
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: homebrew-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  formula:
+    name: Formula (${{ matrix.arch }})
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - arch: arm64
+            runner: macos-15
+          - arch: x86_64
+            runner: macos-15-intel
+
+    steps:
+      - name: Set up Homebrew and tap
+        id: homebrew
+        uses: Homebrew/actions/setup-homebrew@a657b8b0cd35d0f65cce41fce9b24cf054b49869 # 2026.08.24.1
+        with:
+          core: true
+          cask: false
+          stable: true
+
+      - name: Detect released formula
+        id: formula
+        env:
+          FORMULA_PATH: ${{ steps.homebrew.outputs.repository-path }}/Formula/harness-lens.rb
+        run: |
+          if [[ -f "$FORMULA_PATH" ]]; then
+            echo "present=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "present=false" >> "$GITHUB_OUTPUT"
+            echo "Formula pending first reviewed release."
+          fi
+
+      - name: Trust released formula
+        if: steps.formula.outputs.present == 'true'
+        env:
+          FORMULA: ${{ steps.homebrew.outputs.tap-name }}/harness-lens
+        run: brew trust --formula "$FORMULA"
+
+      - name: Check formula on all supported platforms
+        if: steps.formula.outputs.present == 'true'
+        env:
+          TAP: ${{ steps.homebrew.outputs.tap-name }}
+        run: |
+          brew readall --os=all --arch=all "$TAP"
+          brew style "$TAP"
+          brew audit --strict "$TAP/harness-lens"
+
+      - name: Install and test formula
+        if: steps.formula.outputs.present == 'true'
+        env:
+          FORMULA: ${{ steps.homebrew.outputs.tap-name }}/harness-lens
+        run: |
+          brew install "$FORMULA"
+          brew test "$FORMULA"
+          harness-lens --version
