@@ -1,7 +1,11 @@
 <!-- SPDX-License-Identifier: MPL-2.0 -->
 <!-- Copyright © 2026 Cristian Camargo Filho -->
 
-# Contributing
+# How to contribute
+
+Read the central [ecosystem contribution flow](https://github.com/harness-lens/harness-lens/blob/main/docs/architecture.md#how-to-contribute),
+[architecture rules](https://github.com/harness-lens/harness-lens/blob/main/docs/architecture.md#architecture-rules),
+and [CI/test map](https://github.com/harness-lens/harness-lens/blob/main/docs/architecture.md#ci-and-test-map).
 
 This repository owns Homebrew distribution and tap documentation. CLI behavior,
 release builds, and formula generation belong in
